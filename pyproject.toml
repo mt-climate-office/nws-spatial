@@ -10,10 +10,13 @@ packages = [{include = "nws_spatial"}]
 python = "^3.11"
 requests = "^2.31.0"
 pandas = "^2.1.3"
+httpx = "^0.26.0"
+geopandas = "^0.14.2"
 
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.26.0"
+matplotlib = "^3.8.2"
 
 [build-system]
 requires = ["poetry-core"]
