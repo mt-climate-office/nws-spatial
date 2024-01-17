@@ -90,9 +90,18 @@ def get_active_alerts(
 
     return r.json()
 
+
+def summarise_by_zone(gdf):
+    out = gdf.assign(
+        nested=gdf.drop(columns=['@id', 'geometry']).apply(lambda x: x.to_json(), axis=1)
+    )
+    out = out.groupby(["name", "geometry"])["nested"].agg(list).reset_index()
+    out = gpd.GeoDataFrame(out)
+    return out
+
+
 def get_active_alerts_from_zones(gdf: gpd.GeoDataFrame, *args: str) -> gpd.GeoDataFrame:
-    zones = ",".join(gdf['id'])
-    alerts = get_active_alerts(zone=zones)
+    alerts = get_active_alerts(zone=",".join(gdf['id']))
 
     default_args = {
         "affectedZones", "onset", "ends", "severity", "certainty",
@@ -105,7 +114,8 @@ def get_active_alerts_from_zones(gdf: gpd.GeoDataFrame, *args: str) -> gpd.GeoDa
     df_out = []
     for feature in alerts['features']:
         data = {x: feature['properties'].get(x, None) for x in default_args}
-        df_out.append(pd.DataFrame(data))
+        tmp = pd.DataFrame(data)
+        df_out.append(tmp)
 
     df_out = pd.concat(df_out)
     df_out = df_out.rename(
@@ -117,8 +127,22 @@ def get_active_alerts_from_zones(gdf: gpd.GeoDataFrame, *args: str) -> gpd.GeoDa
     df_out = gpd.GeoDataFrame(
         df_out.merge(gdf, how='left', on='@id')
     )
+    df_out = summarise_by_zone(df_out)
     return df_out
 
-gdf = get_zones()
-gdf = get_active_alerts_from_zones(gdf)
-gdf.plot(column='event', categorical=True, legend=True)
+
+
+zones = get_zones()
+zones.drop(
+    columns=[
+        'observationStations', 'radarStation', 
+        'effectiveDate', 'expirationDate']
+).to_json()
+import json
+
+with open("/home/cbrust/git/nws-spatial/data/mt_zones.geojson", "w", encoding="utf-8") as file:
+    json.dump(zones, file)
+alerts = get_active_alerts_from_zones(zones)
+# alerts.to_parquet(
+#     '/home/cbrust/git/nws-spatial/data/latest_alerts.parquet'
+# )
