@@ -95,7 +95,8 @@ def summarise_by_zone(gdf):
     out = gdf.assign(
         nested=gdf.drop(columns=['@id']).apply(lambda x: x.to_json(), axis=1)
     )
-    out = out.groupby(["name", "id"])["nested"].agg(list).reset_index()
+    out['first'] = out.groupby("name")["event"].transform("first")
+    out = out.groupby(["name", "id", "first"])["nested"].agg(list).reset_index()
     return out
 
 
@@ -142,14 +143,23 @@ def save_zones(zones, f_name):
 
     zones.to_file(f_name)
 
-zones = get_zones()
 
-import json
+def make_zone_event_json(alerts, f_name):
+    alerts = dict(zip(alerts['id'], alerts['first']))
 
-with open("/home/cbrust/git/nws-spatial/data/mt_zones.geojson", "w", encoding="utf-8") as file:
-    json.dump(zones.to_json(), file)
-alerts = get_active_alerts_from_zones(zones)
-alerts.to_csv("/home/cbrust/git/nws-spatial/data/latest_alerts.csv", index=0)
+    with open(f_name, "w") as file:
+        json.dump(alerts, file)
+    alerts[["id", "first"]].to_json(orient="records")
+
+
+# zones = get_zones()
+
+# import json
+
+# with open("/home/cbrust/git/nws-spatial/data/mt_zones.geojson", "w", encoding="utf-8") as file:
+#     json.dump(zones.to_json(), file)
+# alerts = get_active_alerts_from_zones(zones)
+# alerts.to_csv("/home/cbrust/git/nws-spatial/data/latest_alerts.csv", index=0)
 # with open("/home/cbrust/git/nws-spatial/data/latest_alerts.json", "w", encoding="utf-8") as file:
 #     json.dump(alerts[['name', 'nested']].to_json(), file)
 # alerts.to_parquet(
