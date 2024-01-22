@@ -93,10 +93,9 @@ def get_active_alerts(
 
 def summarise_by_zone(gdf):
     out = gdf.assign(
-        nested=gdf.drop(columns=['@id', 'geometry']).apply(lambda x: x.to_json(), axis=1)
+        nested=gdf.drop(columns=['@id']).apply(lambda x: x.to_json(), axis=1)
     )
-    out = out.groupby(["name", "geometry"])["nested"].agg(list).reset_index()
-    out = gpd.GeoDataFrame(out)
+    out = out.groupby(["name", "id"])["nested"].agg(list).reset_index()
     return out
 
 
@@ -126,23 +125,33 @@ def get_active_alerts_from_zones(gdf: gpd.GeoDataFrame, *args: str) -> gpd.GeoDa
     gdf = gdf[['@id', 'name', 'geometry']]
     df_out = gpd.GeoDataFrame(
         df_out.merge(gdf, how='left', on='@id')
-    )
+    ).drop(columns="geometry")
+    df_out['id'] = df_out['@id'].str.extract(r'/([^/]+)$')
     df_out = summarise_by_zone(df_out)
     return df_out
 
 
+def save_zones(zones, f_name):
+    zones['id'] = zones['@id'].str.extract(r'/([^/]+)$')
+    zones = zones.drop(
+        columns=[
+            'observationStations', 'radarStation', 
+            'effectiveDate', 'expirationDate', 'cwa', 'forecastOffices', 'timeZone'
+        ]
+    )
+
+    zones.to_file(f_name)
 
 zones = get_zones()
-zones.drop(
-    columns=[
-        'observationStations', 'radarStation', 
-        'effectiveDate', 'expirationDate']
-).to_json()
+
 import json
 
 with open("/home/cbrust/git/nws-spatial/data/mt_zones.geojson", "w", encoding="utf-8") as file:
-    json.dump(zones, file)
+    json.dump(zones.to_json(), file)
 alerts = get_active_alerts_from_zones(zones)
+alerts.to_csv("/home/cbrust/git/nws-spatial/data/latest_alerts.csv", index=0)
+# with open("/home/cbrust/git/nws-spatial/data/latest_alerts.json", "w", encoding="utf-8") as file:
+#     json.dump(alerts[['name', 'nested']].to_json(), file)
 # alerts.to_parquet(
 #     '/home/cbrust/git/nws-spatial/data/latest_alerts.parquet'
 # )

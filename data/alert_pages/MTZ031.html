@@ -1,10 +1,10 @@
-{# templates/wx_warnings.html #}
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Weather Warnings for {{ zone_name }}</title>
+    <title>Weather Warnings for Northern Rosebud</title>
     <style>
         /* From https://www.w3schools.com/html/html_css.asp */
          /* Style the tab */
@@ -69,33 +69,37 @@
 
 <body>
     <div class="tab">
-        {% for wx_event in events %}
-        {% if loop.first %} 
-            <button class="tablinks active" onclick="changeTab(event, '{{ wx_event.event }}')">{{ wx_event.event }}</button>
-        {% else %}
-            <button class="tablinks" onclick="changeTab(event, '{{ wx_event.event }}')">{{ wx_event.event }}</button>
-        {% endif %}
-        {% endfor %}
+        
+         
+            <button class="tablinks active" onclick="changeTab(event, 'Dense Fog Advisory')">Dense Fog Advisory</button>
+        
+        
     </div>
-    {% for wx_event in events %}
-        {% if loop.first %}
-            <div id="{{wx_event.event}}" class="tabcontent" style="display: block">
-        {% else %}
-            <div id="{{wx_event.event}}" class="tabcontent">
-        {% endif %}
-            <h3>{{wx_event.event}} in {{zone_name}}</h3>
-            <h4>{{wx_event.headline}}</h4>
+    
+        
+            <div id="Dense Fog Advisory" class="tabcontent" style="display: block">
+        
+            <h3>Dense Fog Advisory in Northern Rosebud</h3>
+            <h4>Dense Fog Advisory issued January 22 at 11:00AM MST until January 22 at 8:00PM MST by NWS Billings MT</h4>
             <ul>
-                <li><b>Event Start:</b> {{wx_event.onset}}</li>
-                <li><b>Event End:</b> {{wx_event.ends}}</li>
-                <li><b>Event Certainty:</b> {{wx_event.certainty}}</li>
-                <li><b>Event Severity:</b> {{wx_event.severity}}</li>
+                <li><b>Event Start:</b> 2024-01-22T11:00:00-07:00</li>
+                <li><b>Event End:</b> 2024-01-22T20:00:00-07:00</li>
+                <li><b>Event Certainty:</b> Likely</li>
+                <li><b>Event Severity:</b> Moderate</li>
             </ul>
             <h5>Event Description</h5>
-            <p>{{wx_event.description}}</p>
+            <p>* WHAT...Visibility one quarter mile or less in dense fog.
+
+* WHERE...Custer and Northern Rosebud.
+
+* WHEN...Until 8 PM MST this evening.
+
+* IMPACTS...Low visibility and slick spots could make driving
+conditions hazardous especially along I-90.</p>
             <h5>Event Instructions</h5>
-            <p>{{wx_event.instruction}}</p>
+            <p>If driving, slow down, use your headlights, and leave plenty of
+distance ahead of you.</p>
         </div>
-    {% endfor %}
+    
 </body>
 </html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map Example</title>
+    <!-- Include Leaflet CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/flatgeobuf@3.22.0/dist/flatgeobuf-geojson.min.js"></script>
+    <!-- Add your Leaflet map script -->
+</head>
+<body>
+    <!-- Create a container for the map -->
+    <div id="map" style="height: 98vh;"></div>
+    <script>
+        (async() => {
+            var map = L.map('map').setView(new L.LatLng(47, -109), 7);
+
+            var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            const response = await fetch('https://data.climate.umt.edu/website/mt-zones.fgb');
+
+            for await (const f of flatgeobuf.deserialize(response.body))
+                L.geoJSON(f, {
+                    onEachFeature: function (feature, layer) {
+                        var popup = '<iframe src="https://data.climate.umt.edu/website/nws/alert_pages/' + feature.properties.id + '.html" width="800" height="500"></iframe>'
+                        layer.bindPopup(popup, { maxWidth: 800 })
+                    }       
+                }).addTo(map);
+        })();
+
+    </script>
+</body>
+</html>
+<!-- 
+{
+    "Winter Storm Warning": "#ff69b4",
+    "Flood Warning": "#00ff00",
+    "Gale Warning": "#dda0dd",
+    "Winter Weather Advisory": "#7b68ee",
+    "Avalanche Warning": "#1e90ff",
+    "Wind Chill Advisory": "#afeeee",
+    "Flood Advisory": "#00ff7f",
+    "Coastal Flood Advisory": "#7cfc00",
+    "High Surf Advisory": "#ba55d3",
+    "Heavy Freezing Spray Warning": "#00bfff",
+    "Dense Fog Advisory": "#708090",
+    "Small Craft Advisory": "#d8bfd8",
+    "Brisk Wind Advisory": "#d8bfd8",
+    "Wind Advisory": "#d2b48c",
+    "Freezing Fog Advisory": "#008080",
+    "Rip Current Statement": "#40e0d0",
+    "Beach Hazards Statement": "#40e0d0",
+    "Flood Watch": "#2e8b57",
+    "Special Weather Statement": "#ffe4b5",
+    "Marine Weather Statement": "#ffefd5",
+    "Air Quality Alert": "#808080",
+    "Hydrologic Outlook": "#90ee90"
+} -->
