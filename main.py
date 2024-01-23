@@ -61,7 +61,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--template-dir",
-        type=Path, 
+        type=Path,
         help="The path to the directory with templates for alerts.",
         default=Path("./templates"),
     )
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         "--alert-file",
         type=Path,
         help="Path to .csv with the latest alerts",
-        default=Path("./data/latest_alerts.csv")
+        default=Path("./data/latest_alerts.csv"),
     )
 
     args = parser.parse_args()
@@ -79,26 +79,25 @@ if __name__ == "__main__":
         zones = get.get_zones(area=args.zone_id)
         get.save_zones(zones, args.out_dir / f"{args.zone_id}-zones.fgb".lower())
 
-    else: 
+    else:
         zones = gpd.read_file(args.zones)
-    
+
     print("Getting Latest Alerts...")
     if Options.alerts in args.funcs:
         alerts = get.get_active_alerts_from_zones(zones)
-        get.save_zone_event_json(
-            alerts,
-            args.out_dir / "first_alerts.json"
-        )
-        alerts.to_csv(
-            args.out_dir / "latest_alerts.csv"
-        )
+        get.save_zone_event_json(alerts, args.out_dir / "first_alerts.json")
+        alerts.to_csv(args.out_dir / "latest_alerts.csv")
     else:
         alerts = pd.read_csv(args.alert_file)
-    
+
     print("Making Template Files")
     if Options.templates in args.funcs:
+        template_dir = args.out_dir / "alert_pages"
+        for f in template_dir.iterdir():
+            if f.is_file():
+                f.unlink()
         render_templates(
             latest_alerts=alerts,
-            templates = args.template_dir,
-            out_dir=args.out_dir / "alert_pages"
+            templates=args.template_dir,
+            out_dir=args.out_dir / "alert_pages",
         )

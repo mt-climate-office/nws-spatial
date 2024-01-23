@@ -90,7 +90,33 @@ def get_active_alerts(
     return r.json()
 
 
+def description_to_html(description: str) -> str:
+    if "WHAT..." in description:
+        description = (
+            description.replace("*", "<li>")
+                .replace("\n\n", "</li>")
+                .replace("\n", " ")
+                .replace("</li>", "</li>\n")
+        )
+        if not description.endswith("</li>"):
+            description += "</li>"
+        description = f"<ul>\n{description}\n</ul>"
+        description = (
+            description.replace("WHAT...", "<b>WHAT: </b>")
+            .replace("WHEN...", "<b>WHEN: </b>")
+            .replace("WHERE...", "<b>WHERE: </b>")
+            .replace("IMPACTS...", "<b>IMPACTS: </b>")
+            .replace("ADDITIONAL DETAILS...", "<b>ADDITIONAL DETAILS: </b>")
+        )
+    
+    return description
+
+
+
 def summarise_by_zone(gdf: gpd.GeoDataFrame) -> pd.DataFrame:
+    gdf = gdf.assign(
+        description = gdf['description'].apply(description_to_html)
+    )
     out = gdf.assign(
         nested=gdf.drop(columns=["@id"]).apply(lambda x: x.to_json(), axis=1)
     )
@@ -156,9 +182,6 @@ def save_zone_event_json(alerts: pd.DataFrame, f_name: Path) -> None:
 
     with open(f_name, "w") as file:
         json.dump(alerts, file)
-
-
-# zones = get_zones()
 
 # import json
 

@@ -27,7 +27,7 @@ def render_templates(
 ):
     environment = Environment(loader=FileSystemLoader(templates))
     template = environment.get_template("wx_warnings.html")
-    
+
     if isinstance(latest_alerts, Path):
         alerts = pd.read_csv(latest_alerts, converters={"nested": literal_eval})
     else:

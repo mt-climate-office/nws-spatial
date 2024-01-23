@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+    nws:
+        container_name: nws
+        restart: always
+        build: .
+        volumes:
+            - .:/app
