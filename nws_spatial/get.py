@@ -2,8 +2,10 @@ import datetime as dt
 import httpx
 import geopandas as gpd
 import pandas as pd
+import json
+from pathlib import Path
 
-import schemas
+from . import schemas
 
 
 def get_zones(
@@ -62,7 +64,7 @@ def get_active_alerts(
     severity: schemas.Severity | None = None,
     certainty: schemas.Certainty | None = None,
     limit: int | None = 500,
-) -> dict[str, list|dict|str]:
+) -> dict[str, list | dict | str]:
     params = {
         "status": status,
         "message_type": message_type,
@@ -78,78 +80,82 @@ def get_active_alerts(
         "certainty": certainty,
         "limit": limit,
     }
-    
+
     params = {k: v for k, v in params.items() if v is not None}
 
-
     r = httpx.get(
-        "https://api.weather.gov/alerts/active/", 
-        params=params, 
-        follow_redirects=True
+        "https://api.weather.gov/alerts/active/", params=params, follow_redirects=True
     )
 
     return r.json()
 
 
-def summarise_by_zone(gdf):
+def summarise_by_zone(gdf: gpd.GeoDataFrame) -> pd.DataFrame:
     out = gdf.assign(
-        nested=gdf.drop(columns=['@id']).apply(lambda x: x.to_json(), axis=1)
+        nested=gdf.drop(columns=["@id"]).apply(lambda x: x.to_json(), axis=1)
     )
-    out['first'] = out.groupby("name")["event"].transform("first")
+    out["first"] = out.groupby("name")["event"].transform("first")
     out = out.groupby(["name", "id", "first"])["nested"].agg(list).reset_index()
     return out
 
 
 def get_active_alerts_from_zones(gdf: gpd.GeoDataFrame, *args: str) -> gpd.GeoDataFrame:
-    alerts = get_active_alerts(zone=",".join(gdf['id']))
+    alerts = get_active_alerts(zone=",".join(gdf["id"]))
 
     default_args = {
-        "affectedZones", "onset", "ends", "severity", "certainty",
-        "event", "headline", "description", "instruction"
+        "affectedZones",
+        "onset",
+        "ends",
+        "severity",
+        "certainty",
+        "event",
+        "headline",
+        "description",
+        "instruction",
     }
 
     for arg in args:
         default_args.up(arg)
 
     df_out = []
-    for feature in alerts['features']:
-        data = {x: feature['properties'].get(x, None) for x in default_args}
+    for feature in alerts["features"]:
+        data = {x: feature["properties"].get(x, None) for x in default_args}
         tmp = pd.DataFrame(data)
         df_out.append(tmp)
 
     df_out = pd.concat(df_out)
-    df_out = df_out.rename(
-        columns={
-            'affectedZones': '@id'
-        }
+    df_out = df_out.rename(columns={"affectedZones": "@id"})
+    gdf = gdf[["@id", "name", "geometry"]]
+    df_out = gpd.GeoDataFrame(df_out.merge(gdf, how="left", on="@id")).drop(
+        columns="geometry"
     )
-    gdf = gdf[['@id', 'name', 'geometry']]
-    df_out = gpd.GeoDataFrame(
-        df_out.merge(gdf, how='left', on='@id')
-    ).drop(columns="geometry")
-    df_out['id'] = df_out['@id'].str.extract(r'/([^/]+)$')
+    df_out["id"] = df_out["@id"].str.extract(r"/([^/]+)$")
     df_out = summarise_by_zone(df_out)
     return df_out
 
 
-def save_zones(zones, f_name):
-    zones['id'] = zones['@id'].str.extract(r'/([^/]+)$')
+def save_zones(zones: gpd.GeoDataFrame, f_name: Path) -> None:
+    zones["id"] = zones["@id"].str.extract(r"/([^/]+)$")
     zones = zones.drop(
         columns=[
-            'observationStations', 'radarStation', 
-            'effectiveDate', 'expirationDate', 'cwa', 'forecastOffices', 'timeZone'
+            "observationStations",
+            "radarStation",
+            "effectiveDate",
+            "expirationDate",
+            "cwa",
+            "forecastOffices",
+            "timeZone",
         ]
     )
 
     zones.to_file(f_name)
 
 
-def make_zone_event_json(alerts, f_name):
-    alerts = dict(zip(alerts['id'], alerts['first']))
+def save_zone_event_json(alerts: pd.DataFrame, f_name: Path) -> None:
+    alerts = dict(zip(alerts["id"], alerts["first"]))
 
     with open(f_name, "w") as file:
         json.dump(alerts, file)
-    alerts[["id", "first"]].to_json(orient="records")
 
 
 # zones = get_zones()
