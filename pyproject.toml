@@ -3,7 +3,6 @@ name = "nws-spatial"
 version = "0.1.0"
 description = ""
 authors = ["colinbrust <colin.brust@gmail.com>"]
-readme = "README.md"
 packages = [{include = "nws_spatial"}]
 
 [tool.poetry.dependencies]

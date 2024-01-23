@@ -13,7 +13,7 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python
 WORKDIR /app
 
 COPY pyproject.toml poetry.lock* main.py /app/
-COPY ./nws_spatial/ /app/
+COPY ./nws_spatial/ /app/nws_spatial
 RUN poetry install --only main
 
 RUN chmod a+x /app/main.py
