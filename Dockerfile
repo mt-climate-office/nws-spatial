@@ -12,8 +12,13 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python
 
 WORKDIR /app
 
+COPY pyproject.toml poetry.lock* main.py /app/
 RUN poetry install --only main
-RUN chmod a+x ./main.py
-RUN chmod a+x /app/entrypoint.sh
 
-ENTRYPOINT [ "/app/entrypoint.sh" ]
+RUN chmod a+x /app/main.py
+RUN touch /app/test.log
+RUN (crontab -l; echo '* * * * * date >> /app/test.log') | crontab
+RUN (crontab -l; echo '*/15 * * * * cd /app && /usr/local/bin/python ./main.py zones alerts templates') | crontab
+
+
+CMD cron && tail -f /dev/null

@@ -6,4 +6,5 @@ services:
         restart: always
         build: .
         volumes:
-            - .:/app
+            - /var/data/website/nws:/app/data
+            - ./templates:/app/templates
