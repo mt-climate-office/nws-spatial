@@ -20,7 +20,7 @@ RUN chmod a+x /app/main.py
 RUN touch /app/test.log
 
 RUN (crontab -l; echo '* * * * * date >> /app/test.log') | crontab
-RUN (crontab -l; echo '*/15 * * * * cd /app && /usr/local/bin/python ./main.py zones alerts templates') | crontab
+RUN (crontab -l; echo '*/5 * * * * cd /app && /usr/local/bin/python ./main.py zones alerts templates') | crontab
 
 
 CMD cron && tail -f /dev/null

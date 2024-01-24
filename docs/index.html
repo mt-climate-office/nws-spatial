@@ -92,7 +92,7 @@
         function color_from_event(e) {
             return colors[e] || "rgba(0, 0, 0, 0)"; 
         }
-        var map = L.map('map').setView(new L.LatLng(47, -109), 7);
+        var map = L.map('map').setView(new L.LatLng(47, -111), 6);
         var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -141,8 +141,8 @@
                             urlExists(popupUrl, function (exists) {
                                 if (exists) {
                                     // URL exists, add the popup
-                                    var popup = '<iframe src="' + popupUrl + '" width="500" height="500"></iframe>';
-                                    layer.bindPopup(popup, { maxWidth: 500 });
+                                    var popup = '<iframe src="' + popupUrl + '" width="400" height="300"></iframe>';
+                                    layer.bindPopup(popup, { maxWidth: 400 });
                                 } 
                             });
                         }
