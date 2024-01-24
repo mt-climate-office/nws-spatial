@@ -98,6 +98,15 @@
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
 
+        map.addLayer(
+            new L.tileLayer.wms("https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi", {
+                layers: 'nexrad-n0r',
+                format: 'image/png',
+                transparent: true,
+                attribution: "Weather data &copy; 2015 IEM Nexrad"
+            })
+        );
+        
         (async() => {
 
             let alert_response = await fetch("https://data.climate.umt.edu/website/nws/first_alerts.json");
