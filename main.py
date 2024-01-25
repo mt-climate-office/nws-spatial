@@ -84,8 +84,10 @@ if __name__ == "__main__":
 
     print("Getting Latest Alerts...")
     if Options.alerts in args.funcs:
+        
         alerts = get.get_active_alerts_from_zones(zones)
-        get.save_zone_event_json(alerts, args.out_dir / "first_alerts.json")
+
+        get.save_zone_event_json(alerts, Path("./data") / "first_alerts.json")
         alerts.to_csv(args.out_dir / "latest_alerts.csv")
     else:
         alerts = pd.read_csv(args.alert_file)
@@ -96,8 +98,10 @@ if __name__ == "__main__":
         for f in template_dir.iterdir():
             if f.is_file():
                 f.unlink()
-        render_templates(
-            latest_alerts=alerts,
-            templates=args.template_dir,
-            out_dir=args.out_dir / "alert_pages",
-        )
+        
+        if len(alerts) != 0:
+            render_templates(
+                latest_alerts=alerts,
+                templates=args.template_dir,
+                out_dir=args.out_dir / "alert_pages",
+            )

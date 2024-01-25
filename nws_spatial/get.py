@@ -128,6 +128,9 @@ def summarise_by_zone(gdf: gpd.GeoDataFrame) -> pd.DataFrame:
 def get_active_alerts_from_zones(gdf: gpd.GeoDataFrame, *args: str) -> gpd.GeoDataFrame:
     alerts = get_active_alerts(zone=",".join(gdf["id"]))
 
+    if len(alerts['features']) == 0:
+        return gpd.GeoDataFrame({'id': [], 'first': []})
+
     default_args = {
         "affectedZones",
         "onset",
