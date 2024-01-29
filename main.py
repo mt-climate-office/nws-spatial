@@ -94,14 +94,15 @@ if __name__ == "__main__":
 
     print("Getting Latest Alerts...")
     if Options.alerts in args.funcs:
-
         zone_alerts = get.get_active_alerts_from_zones(zones)
         county_alerts = get.get_active_alerts_from_zones(counties)
 
         get.save_zone_event_json(zone_alerts, Path("./data") / "first_alerts_zone.json")
         zone_alerts.to_csv(args.out_dir / "latest_alerts_zone.csv")
 
-        get.save_zone_event_json(county_alerts, Path("./data") / "first_alerts_county.json")
+        get.save_zone_event_json(
+            county_alerts, Path("./data") / "first_alerts_county.json"
+        )
         county_alerts.to_csv(args.out_dir / "latest_alerts_county.csv")
 
     else:
@@ -113,7 +114,7 @@ if __name__ == "__main__":
         for f in template_dir.iterdir():
             if f.is_file():
                 f.unlink()
-        
+
         if len(zone_alerts) != 0:
             render_templates(
                 latest_alerts=zone_alerts,

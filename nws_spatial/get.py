@@ -95,9 +95,9 @@ def description_to_html(description: str) -> str:
     if "WHAT..." in description:
         description = (
             description.replace("*", "<li>")
-                .replace("\n\n", "</li>")
-                .replace("\n", " ")
-                .replace("</li>", "</li>\n")
+            .replace("\n\n", "</li>")
+            .replace("\n", " ")
+            .replace("</li>", "</li>\n")
         )
         if not description.endswith("</li>"):
             description += "</li>"
@@ -108,16 +108,17 @@ def description_to_html(description: str) -> str:
             .replace("WHERE...", "<b>WHERE: </b>")
             .replace("IMPACTS...", "<b>IMPACTS: </b>")
             .replace("ADDITIONAL DETAILS...", "<b>ADDITIONAL DETAILS: </b>")
+            .replace(
+                "PRECAUTIONARY / PREPAREDNESS ACTIONS...",
+                "<b>PRECAUTIONARY / PREPAREDNESS ACTIONS</b>",
+            )
         )
-    
+
     return description
 
 
-
 def summarise_by_zone(gdf: gpd.GeoDataFrame) -> pd.DataFrame:
-    gdf = gdf.assign(
-        description = gdf['description'].apply(description_to_html)
-    )
+    gdf = gdf.assign(description=gdf["description"].apply(description_to_html))
     out = gdf.assign(
         nested=gdf.drop(columns=["@id"]).apply(lambda x: x.to_json(), axis=1)
     )
@@ -129,8 +130,8 @@ def summarise_by_zone(gdf: gpd.GeoDataFrame) -> pd.DataFrame:
 def get_active_alerts_from_zones(gdf: gpd.GeoDataFrame, *args: str) -> gpd.GeoDataFrame:
     alerts = get_active_alerts(zone=",".join(gdf["id"]))
 
-    if len(alerts['features']) == 0:
-        return gpd.GeoDataFrame({'id': [], 'first': []})
+    if len(alerts["features"]) == 0:
+        return gpd.GeoDataFrame({"id": [], "first": []})
 
     default_args = {
         "affectedZones",
