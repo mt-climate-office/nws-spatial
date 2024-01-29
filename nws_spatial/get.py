@@ -30,6 +30,7 @@ def get_zones(
     }
 
     params = {k: v for k, v in params.items() if v is not None}
+    print(params)
 
     r = httpx.get("https://api.weather.gov/zones", params=params)
 
@@ -185,15 +186,3 @@ def save_zone_event_json(alerts: pd.DataFrame, f_name: Path) -> None:
 
     with open(f_name, "w") as file:
         json.dump(alerts, file)
-
-# import json
-
-# with open("/home/cbrust/git/nws-spatial/data/mt_zones.geojson", "w", encoding="utf-8") as file:
-#     json.dump(zones.to_json(), file)
-# alerts = get_active_alerts_from_zones(zones)
-# alerts.to_csv("/home/cbrust/git/nws-spatial/data/latest_alerts.csv", index=0)
-# with open("/home/cbrust/git/nws-spatial/data/latest_alerts.json", "w", encoding="utf-8") as file:
-#     json.dump(alerts[['name', 'nested']].to_json(), file)
-# alerts.to_parquet(
-#     '/home/cbrust/git/nws-spatial/data/latest_alerts.parquet'
-# )
