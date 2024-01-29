@@ -86,7 +86,7 @@ if __name__ == "__main__":
         get.save_zones(zones, args.out_dir / f"{args.zone_id}-zones.fgb".lower())
 
         counties = get.get_zones(area=args.zone_id, type="county")
-        get.save_zones(zones, args.out_dir / f"{args.zone_id}-counties.fgb".lower())
+        get.save_zones(counties, args.out_dir / f"{args.zone_id}-counties.fgb".lower())
 
     else:
         zones = gpd.read_file(args.zones)
