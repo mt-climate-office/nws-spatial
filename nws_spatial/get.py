@@ -110,7 +110,7 @@ def description_to_html(description: str) -> str:
             .replace("ADDITIONAL DETAILS...", "<b>ADDITIONAL DETAILS: </b>")
             .replace(
                 "PRECAUTIONARY / PREPAREDNESS ACTIONS...",
-                "<b>PRECAUTIONARY / PREPAREDNESS ACTIONS</b>",
+                "<b>PRECAUTIONARY / PREPAREDNESS ACTIONS: </b>",
             )
         )
 

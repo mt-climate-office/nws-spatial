@@ -120,6 +120,7 @@ if __name__ == "__main__":
                 latest_alerts=zone_alerts,
                 templates=args.template_dir,
                 out_dir=args.out_dir / "alert_pages",
+                for_county=False,
             )
 
         if len(county_alerts) != 0:
@@ -127,4 +128,5 @@ if __name__ == "__main__":
                 latest_alerts=county_alerts,
                 templates=args.template_dir,
                 out_dir=args.out_dir / "alert_pages",
+                for_county=True,
             )

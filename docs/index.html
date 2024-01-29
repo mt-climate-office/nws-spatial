@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/flatgeobuf@3.22.0/dist/flatgeobuf-geojson.min.js"></script>
+    <script src="./leaflet-event-forwarder.js"></script>
     <style>
         /*Setup*/
         html,
@@ -94,7 +95,6 @@
         }
         function add_popup_features(feature, layer) {
             var popupUrl = 'https://data.climate.umt.edu/website/nws/alert_pages/' + feature.properties.id + '.html';
-            console.log(feature.properties);
             // Function to check if the URL exists
             function urlExists(url, callback) {
                 var xhr = new XMLHttpRequest();
@@ -111,6 +111,7 @@
             function addPopup() {
                 urlExists(popupUrl, function (exists) {
                     if (exists) {
+                        console.log(popupUrl);
                         // URL exists, add the popup
                         var popup = '<iframe src="' + popupUrl + '" width="400" height="300"></iframe>';
                         layer.bindPopup(popup, { maxWidth: 400 });
@@ -126,7 +127,8 @@
                 maxZoom: 19,
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
-
+        
+        map.doubleClickZoom.disable();
         map.addLayer(
             new L.tileLayer.wms("https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi", {
                 layers: 'nexrad-n0r',
@@ -138,11 +140,21 @@
 
         const zone_group = L.layerGroup();
         const county_group = L.layerGroup();
-        
+        const myEventForwarder = new L.eventForwarder({
+            map: map,
+            // events to forward
+            events: {click: true, mousemove: false}
+        });
+
+            // enable event forwarding
+            myEventForwarder.enable();
         (async() => {
 
-            let alert_response = await fetch("https://data.climate.umt.edu/website/nws/first_alerts.json");
-            let alert_coloring = await alert_response.json();
+            let alert_response_county = await fetch("https://data.climate.umt.edu/website/nws/first_alerts_county.json");
+            let alert_coloring_county = await alert_response_county.json();
+
+            let alert_response_zone = await fetch("https://data.climate.umt.edu/website/nws/first_alerts_zone.json");
+            let alert_coloring_zone = await alert_response_zone.json();
 
             const response = await fetch('https://data.climate.umt.edu/website/nws/mt-zones.fgb');
 
@@ -163,9 +175,9 @@
                     onEachFeature: add_popup_features,
                     style: function(feature) {
                         return {
-                            fillColor: color_from_event(alert_coloring[feature.properties.id]),
+                            fillColor: color_from_event(alert_coloring_county[feature.properties.id]),
                             fillOpacity: 0.9,
-                            color: color_from_event(alert_coloring[feature.properties.id]),
+                            color: color_from_event(alert_coloring_county[feature.properties.id]),
                             opacity: 0.9, 
                             weight: 1,
                         }
@@ -180,9 +192,9 @@
                     onEachFeature: add_popup_features,
                     style: function(feature) {
                         return {
-                            fillColor: color_from_event(alert_coloring[feature.properties.id]),
+                            fillColor: color_from_event(alert_coloring_zone[feature.properties.id]),
                             fillOpacity: 0.9,
-                            color: color_from_event(alert_coloring[feature.properties.id]),
+                            color: color_from_event(alert_coloring_zone[feature.properties.id]),
                             opacity: 0.9, 
                             weight: 1,
                         }
@@ -194,14 +206,13 @@
 
 
             var legend = L.control({ position: "bottomleft" });
-            let unqEvents = Array.from(new Set(Object.values(alert_coloring)));
+            let unqEvents = Array.from(new Set(Object.values(alert_coloring_county), Object.values(alert_coloring_zone)));
 
             legend.onAdd = function(map) {
                 var div = L.DomUtil.create("div", "legend");
                 div.innerHTML += "<h4>Current Alerts</h4>"
                 for (const event of unqEvents) {
                     const color = color_from_event(event);
-                    console.log(`${event}: ${color}`);
                     div.innerHTML += `<i style="background: ${color_from_event(event)}"></i><span>${event}</span><br>`;
                 }
                 return div
