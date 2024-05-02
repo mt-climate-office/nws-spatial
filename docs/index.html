@@ -208,7 +208,7 @@
 
 
             var legend = L.control({ position: "bottomleft" });
-            let unqEvents = Array.from(new Set(Object.values(alert_coloring_county), Object.values(alert_coloring_zone)));
+            let unqEvents = Array.from(new Set([...Object.values(alert_coloring_county), ...Object.values(alert_coloring_zone)]))
 
             legend.onAdd = function(map) {
                 var div = L.DomUtil.create("div", "legend");
