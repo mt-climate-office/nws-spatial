@@ -1,0 +1,109 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Weather Warnings for Petroleum</title>
+    <style>
+        /* From https://www.w3schools.com/html/html_css.asp */
+         /* Style the tab */
+        .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+        }
+
+        /* Style the buttons that are used to open the tab content */
+        .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+        background-color: #ddd;
+        }
+
+        /* Create an active/current tablink class */
+        .tab button.active {
+        background-color: #ccc;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+        } 
+
+        /* Make all text smaller by 2pt */
+        body {
+            font-size: 10px;
+        }
+    </style>
+    <script>
+        function changeTab(evt, tabName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        } 
+    </script>
+</head>
+
+<body>
+    <div class="tab">
+        
+         
+            <button class="tablinks active" onclick="changeTab(event, 'Lake Wind Advisory')">Lake Wind Advisory</button>
+        
+        
+    </div>
+    
+        
+            <div id="Lake Wind Advisory" class="tabcontent" style="display: block">
+        
+            <h3>Lake Wind Advisory in Petroleum </h3>
+            <h4>Lake Wind Advisory issued May 2 at 2:56AM MDT until May 2 at 8:00PM MDT by NWS Glasgow MT</h4>
+            <ul>
+                <li><b>Event Start:</b> 2024-05-02T10:00:00-06:00</li>
+                <li><b>Event End:</b> 2024-05-02T20:00:00-06:00</li>
+                <li><b>Event Certainty:</b> Likely</li>
+                <li><b>Event Severity:</b> Moderate</li>
+            </ul>
+            <h5>Event Description</h5>
+            <p><ul>
+<li> <b>WHAT: </b>Northwest winds 15 to 25 mph with gusts up to 35 mph expected.</li>
+<li> <b>WHERE: </b>Fort Peck Lake.</li>
+<li> <b>WHEN: </b>From 10 AM this morning to 8 PM MDT this evening.</li>
+<li> <b>IMPACTS: </b>Strong winds and rough waves on area lakes will create hazardous conditions for small craft.</li>
+<li> <b>ADDITIONAL DETAILS: </b>Rain and snow showers are expected today and tonight with cold temperatures that will increase the risk of hypothermia.</li>
+</ul></p>
+            <h5>Event Instructions</h5>
+            <p>Boaters on Fort Peck Lake should use extra caution since strong
+winds and rough waves can overturn small craft.</p>
+        </div>
+    
+</body>
+</html>

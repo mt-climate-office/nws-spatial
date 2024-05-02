@@ -87,7 +87,9 @@
             "Special Weather Statement": "#ffe4b5",
             "Marine Weather Statement": "#ffefd5",
             "Air Quality Alert": "#808080",
-            "Hydrologic Outlook": "#90ee90"
+            "Hydrologic Outlook": "#90ee90",
+            "Lake Wind Advisory": "#D2B48C",
+            "Wind Advisory": "#D2B48C",
         }
 
         function color_from_event(e) {
@@ -129,14 +131,14 @@
             }).addTo(map);
         
         map.doubleClickZoom.disable();
-        map.addLayer(
-            new L.tileLayer.wms("https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi", {
-                layers: 'nexrad-n0r',
-                format: 'image/png',
-                transparent: true,
-                attribution: "Weather data &copy; 2015 IEM Nexrad"
-            })
-        );
+        // map.addLayer(
+        //     new L.tileLayer.wms("https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi", {
+        //         layers: 'nexrad-n0r',
+        //         format: 'image/png',
+        //         transparent: true,
+        //         attribution: "Weather data &copy; 2015 IEM Nexrad"
+        //     })
+        // );
 
         const zone_group = L.layerGroup();
         const county_group = L.layerGroup();
