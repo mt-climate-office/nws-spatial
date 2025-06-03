@@ -79,7 +79,6 @@ def get_active_alerts(
         "urgency": urgency,
         "severity": severity,
         "certainty": certainty,
-        "limit": limit,
     }
 
     params = {k: v for k, v in params.items() if v is not None}
