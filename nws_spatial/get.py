@@ -4,6 +4,7 @@ import geopandas as gpd
 import pandas as pd
 import json
 from pathlib import Path
+import warnings
 
 from . import schemas
 
@@ -42,11 +43,15 @@ def get_zones(
 
         for feature in response_json["features"]:
             zone = httpx.get(feature["id"])
-            tmp = gpd.read_file(zone.text, driver="GeoJSON")
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", FutureWarning)
+                tmp = gpd.read_file(zone.text, driver="GeoJSON")
             gpd_out.append(tmp)
         gdf = gpd.GeoDataFrame(pd.concat(gpd_out, ignore_index=True))
     else:
-        gdf = gpd.read_file(r.text, driver="GeoJSON")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", FutureWarning)
+            gdf = gpd.read_file(r.text, driver="GeoJSON")
 
     return gdf
 

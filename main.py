@@ -66,6 +66,12 @@ if __name__ == "__main__":
         default=Path("./data/mt-counties.fgb"),
     )
     parser.add_argument(
+        "--fire-zones",
+        type=Path,
+        help="Path where the fire zones .geojson either exists or will be saved to",
+        default=Path("./data/mt-fire.fgb"),
+    )
+    parser.add_argument(
         "--template-dir",
         type=Path,
         help="The path to the directory with templates for alerts.",
@@ -88,14 +94,19 @@ if __name__ == "__main__":
         counties = get.get_zones(area=args.zone_id, type="county")
         get.save_zones(counties, args.out_dir / f"{args.zone_id}-counties.fgb".lower())
 
+        fire_zones = get.get_zones(area=args.zone_id, type="fire")
+        get.save_zones(fire_zones, args.out_dir / f"{args.zone_id}-fire.fgb".lower())
+
     else:
         zones = gpd.read_file(args.zones)
         counties = gpd.read_file(args.counties)
+        fire_zones = gpd.read_file(args.fire_zones)
 
     print("Getting Latest Alerts...")
     if Options.alerts in args.funcs:
         zone_alerts = get.get_active_alerts_from_zones(zones)
         county_alerts = get.get_active_alerts_from_zones(counties)
+        fire_alerts = get.get_active_alerts_from_zones(fire_zones)
 
         get.save_zone_event_json(zone_alerts, Path("./data") / "first_alerts_zone.json")
         zone_alerts.to_csv(args.out_dir / "latest_alerts_zone.csv")
@@ -104,6 +115,11 @@ if __name__ == "__main__":
             county_alerts, Path("./data") / "first_alerts_county.json"
         )
         county_alerts.to_csv(args.out_dir / "latest_alerts_county.csv")
+
+        get.save_zone_event_json(
+            fire_alerts, Path("./data") / "first_alerts_fire.json"
+        )
+        fire_alerts.to_csv(args.out_dir / "latest_alerts_fire.csv")
 
     else:
         alerts = pd.read_csv(args.alert_file)
@@ -120,7 +136,7 @@ if __name__ == "__main__":
                 latest_alerts=zone_alerts,
                 templates=args.template_dir,
                 out_dir=args.out_dir / "alert_pages",
-                for_county=False,
+                zone_type="forecast",
             )
 
         if len(county_alerts) != 0:
@@ -128,5 +144,13 @@ if __name__ == "__main__":
                 latest_alerts=county_alerts,
                 templates=args.template_dir,
                 out_dir=args.out_dir / "alert_pages",
-                for_county=True,
+                zone_type="county",
+            )
+
+        if len(fire_alerts) != 0:
+            render_templates(
+                latest_alerts=fire_alerts,
+                templates=args.template_dir,
+                out_dir=args.out_dir / "alert_pages",
+                zone_type="fire",
             )

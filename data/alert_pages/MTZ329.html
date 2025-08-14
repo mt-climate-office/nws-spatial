@@ -1,0 +1,117 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Weather Warnings for Ruby Mountains and Southern Beaverhead Mountains</title>
+    <style>
+        /* From https://www.w3schools.com/html/html_css.asp */
+         /* Style the tab */
+        .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+        }
+
+        /* Style the buttons that are used to open the tab content */
+        .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+        background-color: #ddd;
+        }
+
+        /* Create an active/current tablink class */
+        .tab button.active {
+        background-color: #ccc;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+        } 
+
+        /* Make all text smaller by 2pt */
+        body {
+            font-size: 10px;
+        }
+    </style>
+    <script>
+        function changeTab(evt, tabName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        } 
+    </script>
+</head>
+
+<body>
+    <div class="tab">
+        
+         
+            <button class="tablinks active" onclick="changeTab(event, 'Special Weather Statement')">Special Weather Statement</button>
+        
+        
+    </div>
+    
+        
+            <div id="Special Weather Statement" class="tabcontent" style="display: block">
+        
+            <h3>Special Weather Statement in Ruby Mountains and Southern Beaverhead Mountains </h3>
+            <h4>Special Weather Statement issued August 14 at 3:14PM MDT by NWS Great Falls MT</h4>
+            <ul>
+                <li><b>Event Start:</b> 2025-08-14T15:14:00-06:00</li>
+                <li><b>Event End:</b> None</li>
+                <li><b>Event Certainty:</b> Observed</li>
+                <li><b>Event Severity:</b> Moderate</li>
+            </ul>
+            <h5>Event Description</h5>
+            <p>At 313 PM MDT, Doppler radar was tracking a cluster of gusty showers
+and isolated thunderstorms in far southern Beaverhead, Madison, and
+Gallatin counties, moving northeast at 25 mph.
+
+HAZARD...Wind gusts up to 50 mph.
+
+SOURCE...Radar indicated.
+
+IMPACT...Gusty winds could knock down tree limbs and blow around
+unsecured objects.
+
+Locations impacted include...
+West Yellowstone, Lima, Monida, Dell, Bannack Pass, Red Rock Pass,
+Lakeview, Yellowstone Village, Targhee Pass, Snowline, Raynolds Pass,
+and Monida Pass.</p>
+            <h5>Event Instructions</h5>
+            <p>If outdoors, consider seeking shelter inside a building. Isolated
+lightning strikes will be possible with this activity.</p>
+        </div>
+    
+</body>
+</html>
